@@ -1,21 +1,21 @@
-Code,Category,Class,Address,Lot Area (sqm),Floor Area (sqm),Min Bid Price (PHP),Sales Officer
-06759-SFO-408,House & Lot,Yellow,"Lot 33 Block 7, Dama de Noche Drive, Town & Country Homes, Brgy. Pulung Bulu, San Fernando City, Pampanga",300.0,148.0,11500000,Charlie (+63 927 133 6274 / +63 045 961 4288)
-06760-ILO-190,Vacant Lot,Yellow,"Lot 1 Block 16, Savannah Crest A, Brgy. Abilay Norte, Oton, Iloilo",665.0,,15000000,Mike (+63 927 133 6174 / +63 034 433 3481)
-06764-DVO-215,Lot w/ Structure,Yellow,"Lots 1539 & 1540 Mariano Gomez St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",1260.0,466.08,13200000,Albert (+63 927 133 6136 / +63 082 234 9443)
-06774-DAG-290,House & Lot,Yellow,"Lots 3, 4-C & 4-D, National Road, Brgy. Luna, Bolinao, Pangasinan",119250.0,4125.6,87000000,Krish (+63 927 133 6269 / +63 075 523 6642)
-05728-ILO-158,Vacant Lot,Yellow,"Lot 2925-B Provincial Road, Brgy. New Buswang, Kalibo, Aklan",1073.0,,22100000,Mike (+63 927 133 6174 / +63 034 433 3481)
-05755-CDO-139,House & Lot,Yellow,"Lot 3229 unnamed Road, Brgy. Don Carlos Norte, Don Carlos, Bukidnon",612.0,330.0,15000000,Kring (+63 927 133 6156 / +63 088 850 8567)
-06758-LIP-306,Vacant Lot,Green,"Lot 3 Block 3 Aster St., Avida Settings Batangas Phase 1, Brgy. Poblacion III, San Pascual, Batangas",189.0,,4100000,Von (+63 927 133 6280 / +63 043 757 0469)
-06762-LIP-307,Vacant Lot,Yellow,"Lot 16 Block 26 Dove St., Canyon Woods Subdivision, Brgy. San Gabriel, Laurel, Batangas",632.0,,8700000,Von (+63 927 133 6280 / +63 043 757 0469)
-06767-B-417,House & Lot,Green,"Lot 8 Block 3 Bellavita General Trias Phase 2, Brgy. Talipapa, General Trias, Cavite",60.0,24.25,1397000,Jen (+63 917 824 9144 / +63 02 858 03113)
-06773-C-342,Townhouse,Green,"Lot 7 Block 2 Ruby St. corner Citation Ave., Citation Residences, Brgy. Calabuso, Biñan City, Laguna",159.0,88.0,5716000,Mar (+63 927 133 6429 / +63 02 858 03144)
-06763-ILO-191,Condominium,Yellow,"Unit 438 The Uptown Place, General Luna Hwy., Brgy. Inday, Iloilo City, Iloilo",,31.28,3800000,Mike (+63 927 133 6174 / +63 034 433 3481)
-06768-ILO-192,House & Lot,Yellow,"Lot 19 Block 12 Happy Homes Subdivision, Brgy. Ona de Leon Mandurriao, Iloilo City, Iloilo",52.0,63.0,2850000,Mike (+63 927 133 6174 / +63 034 433 3481)
-06769-ILO-193,House & Lot,Yellow,"Lot 14 Block 18 Cardinat St. corner Chestnut St., Emerald Estate Subdivision Phase 1, Brgy. Cagbang, Oton, Iloilo City",109.0,78.0,6100000,Mike (+63 927 133 6174 / +63 034 433 3481)
-06770-BAC-214,House & Lot,Yellow,"Lot 29 Block 4 Regent Pearl Doña Carmen Subdivision (DC1), Brgy. Alijis, Bacolod City, Negros Occidental",60.0,32.84,1050000,Mike (+63 927 133 6174 / +63 034 433 3481)
-06761-DVO-214,Lot w/ Structure,Yellow,"Lot 13 Block 19 Sarangani Homes Phase 2, Brgy. San Isidro, General Santos City, South Cotabato",120.0,98.0,2450000,Albert (+63 927 133 6136 / +63 082 234 9443)
-06765-DVO-216,Lot w/ Structure,Yellow,"Lot 1393 Thomas Pinpin St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",599.0,219.88,5700000,Albert (+63 927 133 6136 / +63 082 234 9443)
-06766-DVO-217,Vacant Lot,Yellow,"Lot 497 Rosal St. corner Carnacion St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",644.0,,6000000,Albert (+63 927 133 6136 / +63 082 234 9443)
-05857-CDO-155,Vacant Lot,Yellow,"Lot 6587-F-2, Brgy. Barra, Opol, Misamis Oriental",296.0,,1450000,Kring (+63 927 133 6156 / +63 088 850 8567)
-05854-CDO-153,House & Lot,Yellow,"Lot 3-A, Barangay Road Jariol Compound, Brgy. Upper Macasandig, Cagayan de Oro City, Misamis Oriental",250.0,,2500000,Kring (+63 927 133 6156 / +63 088 850 8567)
-05283-CDO-130,House & Lot,Green,"Lot 5-C-2-C-9-B-2, Brgy. Natumolan, Tagoloan, Misamis Oriental",584.0,136.95,5700000,Kring (+63 927 133 6156 / +63 088 850 8567)
+Code,Category,Class,Address,Lot Area (sqm),Floor Area (sqm),Min Bid Price (PHP),Sales Officer,Latitude,Longitude
+06759-SFO-408,House & Lot,Yellow,"Lot 33 Block 7, Dama de Noche Drive, Town & Country Homes, Brgy. Pulung Bulu, San Fernando City, Pampanga",300.0,148.0,11500000,Charlie (+63 927 133 6274 / +63 045 961 4288),15.1253588,120.6077625
+06760-ILO-190,Vacant Lot,Yellow,"Lot 1 Block 16, Savannah Crest A, Brgy. Abilay Norte, Oton, Iloilo",665.0,,15000000,Mike (+63 927 133 6174 / +63 034 433 3481),10.7441929,122.5012049
+06764-DVO-215,Lot w/ Structure,Yellow,"Lots 1539 & 1540 Mariano Gomez St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",1260.0,466.08,13200000,Albert (+63 927 133 6136 / +63 082 234 9443),6.3702091,124.7426733
+06774-DAG-290,House & Lot,Yellow,"Lots 3, 4-C & 4-D, National Road, Brgy. Luna, Bolinao, Pangasinan",119250.0,4125.6,87000000,Krish (+63 927 133 6269 / +63 075 523 6642),16.3302232,119.894387
+05728-ILO-158,Vacant Lot,Yellow,"Lot 2925-B Provincial Road, Brgy. New Buswang, Kalibo, Aklan",1073.0,,22100000,Mike (+63 927 133 6174 / +63 034 433 3481),11.7112491,122.380176
+05755-CDO-139,House & Lot,Yellow,"Lot 3229 unnamed Road, Brgy. Don Carlos Norte, Don Carlos, Bukidnon",612.0,330.0,15000000,Kring (+63 927 133 6156 / +63 088 850 8567),7.6992887,124.9864861
+06758-LIP-306,Vacant Lot,Green,"Lot 3 Block 3 Aster St., Avida Settings Batangas Phase 1, Brgy. Poblacion III, San Pascual, Batangas",189.0,,4100000,Von (+63 927 133 6280 / +63 043 757 0469),13.7850964,121.0254759
+06762-LIP-307,Vacant Lot,Yellow,"Lot 16 Block 26 Dove St., Canyon Woods Subdivision, Brgy. San Gabriel, Laurel, Batangas",632.0,,8700000,Von (+63 927 133 6280 / +63 043 757 0469),14.0215839,120.8909119
+06767-B-417,House & Lot,Green,"Lot 8 Block 3 Bellavita General Trias Phase 2, Brgy. Talipapa, General Trias, Cavite",60.0,24.25,1397000,Jen (+63 917 824 9144 / +63 02 858 03113),14.3565429,120.8562774
+06773-C-342,Townhouse,Green,"Lot 7 Block 2 Ruby St. corner Citation Ave., Citation Residences, Brgy. Calabuso, Biñan City, Laguna",159.0,88.0,5716000,Mar (+63 927 133 6429 / +63 02 858 03144),14.3103961,121.0668323
+06763-ILO-191,Condominium,Yellow,"Unit 438 The Uptown Place, General Luna Hwy., Brgy. Inday, Iloilo City, Iloilo",,31.28,3800000,Mike (+63 927 133 6174 / +63 034 433 3481),10.7004411,122.5610289
+06768-ILO-192,House & Lot,Yellow,"Lot 19 Block 12 Happy Homes Subdivision, Brgy. Ona de Leon Mandurriao, Iloilo City, Iloilo",52.0,63.0,2850000,Mike (+63 927 133 6174 / +63 034 433 3481),10.7185861,122.547669
+06769-ILO-193,House & Lot,Yellow,"Lot 14 Block 18 Cardinat St. corner Chestnut St., Emerald Estate Subdivision Phase 1, Brgy. Cagbang, Oton, Iloilo City",109.0,78.0,6100000,Mike (+63 927 133 6174 / +63 034 433 3481),10.7012315,122.5061381
+06770-BAC-214,House & Lot,Yellow,"Lot 29 Block 4 Regent Pearl Doña Carmen Subdivision (DC1), Brgy. Alijis, Bacolod City, Negros Occidental",60.0,32.84,1050000,Mike (+63 927 133 6174 / +63 034 433 3481),10.6267598,122.9625274
+06761-DVO-214,Lot w/ Structure,Yellow,"Lot 13 Block 19 Sarangani Homes Phase 2, Brgy. San Isidro, General Santos City, South Cotabato",120.0,98.0,2450000,Albert (+63 927 133 6136 / +63 082 234 9443),6.146046200000001,125.1633139
+06765-DVO-216,Lot w/ Structure,Yellow,"Lot 1393 Thomas Pinpin St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",599.0,219.88,5700000,Albert (+63 927 133 6136 / +63 082 234 9443),6.371048,124.745518
+06766-DVO-217,Vacant Lot,Yellow,"Lot 497 Rosal St. corner Carnacion St., Brgy. Libertad (Poblacion), Surallah, South Cotabato",644.0,,6000000,Albert (+63 927 133 6136 / +63 082 234 9443),6.376798399999999,124.7510165
+05857-CDO-155,Vacant Lot,Yellow,"Lot 6587-F-2, Brgy. Barra, Opol, Misamis Oriental",296.0,,1450000,Kring (+63 927 133 6156 / +63 088 850 8567),8.5126873,124.6089786
+05854-CDO-153,House & Lot,Yellow,"Lot 3-A, Barangay Road Jariol Compound, Brgy. Upper Macasandig, Cagayan de Oro City, Misamis Oriental",250.0,,2500000,Kring (+63 927 133 6156 / +63 088 850 8567),8.4569527,124.6442505
+05283-CDO-130,House & Lot,Green,"Lot 5-C-2-C-9-B-2, Brgy. Natumolan, Tagoloan, Misamis Oriental",584.0,136.95,5700000,Kring (+63 927 133 6156 / +63 088 850 8567),8.5042394,124.8127381

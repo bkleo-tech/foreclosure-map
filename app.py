@@ -1,41 +1,36 @@
-from flask import Flask, render_template, send_from_directory, jsonify
-import os
+from flask import Flask, jsonify, render_template
 import pandas as pd
+import os
 
 app = Flask(__name__)
-
 CSV_PATH = os.path.join(app.root_path, 'Bank_Listings.csv')
 
-# Home route
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# API endpoint to get property data
 @app.route('/api/properties')
 def get_properties():
     df = pd.read_csv(CSV_PATH)
-    # Only return relevant fields
     properties = []
     for _, row in df.iterrows():
+        def safe_get(col):
+            val = row.get(col, None)
+            return None if pd.isna(val) else val
         properties.append({
-            'code': row['Code'],
-            'type': row['Category'],
-            'address': row['Address'],
-            'price': row['Min Bid Price (PHP)'],
-            'image': row['Image'] if 'Image' in row and not pd.isna(row['Image']) else '',
-            'class': row['Class'],
-            'lot_area': row['Lot Area (sqm)'],
-            'floor_area': row['Floor Area (sqm)'],
-            'sales_officer': row['Sales Officer']
-            # Add lat/lng here if available in the future
+            'code': safe_get('Code'),
+            'type': safe_get('Category'),
+            'address': safe_get('Address'),
+            'price': safe_get('Min Bid Price (PHP)'),
+            'image': safe_get('Image'),
+            'class': safe_get('Class'),
+            'lot_area': safe_get('Lot Area (sqm)'),
+            'floor_area': safe_get('Floor Area (sqm)'),
+            'sales_officer': safe_get('Sales Officer'),
+            'latitude': safe_get('Latitude'),
+            'longitude': safe_get('Longitude')
         })
     return jsonify(properties)
-
-# Serve images from static/images
-@app.route('/images/<path:filename>')
-def images(filename):
-    return send_from_directory(os.path.join(app.root_path, 'static/images'), filename)
 
 if __name__ == '__main__':
     app.run(debug=True) 
