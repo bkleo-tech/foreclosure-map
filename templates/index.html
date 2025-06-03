@@ -93,7 +93,6 @@
                     const lng = parseFloat(p.longitude);
                     const marker = L.marker([lat, lng]).addTo(map);
                     marker.on('click', () => showPropertyModal(p));
-                    marker.bindPopup(`<b>${p.type}</b><br>${p.address}`);
                     markers.push(marker);
                 } else {
                     console.log('Property missing coordinates:', p);
@@ -103,16 +102,20 @@
 
         function showPropertyModal(property) {
             // Create a more detailed popup
+            const placeholderImage = '/static/images/placeholder.png'; // Path to your placeholder image
+            const propertyImage = property.image ? ` src="${property.image}"` : ` src="${placeholderImage}"`;
+            const imageTag = `<img${propertyImage} style="max-width: 100%; height: auto;">`;
+
             const popupContent = `
                 <div style="max-width: 300px;">
-                    <h3>${property.type}</h3>
-                    <p><strong>Address:</strong> ${property.address}</p>
-                    <p><strong>Price:</strong> ₱${property.price.toLocaleString()}</p>
-                    <p><strong>Lot Area:</strong> ${property.lot_area} sqm</p>
-                    <p><strong>Floor Area:</strong> ${property.floor_area} sqm</p>
-                    <p><strong>Class:</strong> ${property.class}</p>
-                    <p><strong>Sales Officer:</strong> ${property.sales_officer}</p>
-                    ${property.image ? `<img src="${property.image}" style="max-width: 100%;">` : ''}
+                    <h3>${property.type || 'N/A'}</h3>
+                    ${imageTag}
+                    <p><strong>Address:</strong> ${property.address || 'N/A'}</p>
+                    <p><strong>Price:</strong> ₱${property.price ? parseFloat(property.price).toLocaleString() : 'N/A'}</p>
+                    <p><strong>Lot Area:</strong> ${property.lot_area || 'N/A'} sqm</p>
+                    <p><strong>Floor Area:</strong> ${property.floor_area || 'N/A'} sqm</p>
+                    <p><strong>Class:</strong> ${property.class || 'N/A'}</p>
+                    <p><strong>Sales Officer:</strong> ${property.sales_officer || 'N/A'}</p>
                 </div>
             `;
             L.popup()
