@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foreclosure Map</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 80vh; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="mb-4">Foreclosure Map of the Philippines</h1>
+        <div class="row mb-3">
+            <div class="col-md-3 mb-2">
+                <input type="text" id="searchLocation" class="form-control" placeholder="Search location...">
+            </div>
+            <div class="col-md-3 mb-2">
+                <select id="filterType" class="form-select">
+                    <option value="">All Types</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+            </div>
+            <div class="col-md-3 mb-2">
+                <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+            </div>
+        </div>
+        <div id="map" class="mb-4"></div>
+    </div>
+
+    <!-- Property Modal -->
+    <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="propertyModalLabel">Property Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="propertyDetails"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      var map = L.map('map').setView([12.8797, 121.7740], 6); // Centered on the Philippines
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      let allProperties = [];
+      let markers = [];
+
+      // Fetch property data
+      fetch('/api/properties')
+        .then(res => res.json())
+        .then(data => {
+          allProperties = data;
+          populateTypeFilter(data);
+          updateMarkers();
+        });
+
+      function populateTypeFilter(data) {
+        const types = Array.from(new Set(data.map(p => p.type)));
+        const filterType = document.getElementById('filterType');
+        types.forEach(type => {
+          if (type) {
+            const opt = document.createElement('option');
+            opt.value = type;
+            opt.textContent = type;
+            filterType.appendChild(opt);
+          }
+        });
+      }
+
+      function updateMarkers() {
+        // Remove old markers
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+
+        // Get filter values
+        const searchLocation = document.getElementById('searchLocation').value.toLowerCase();
+        const filterType = document.getElementById('filterType').value;
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+
+        // Filter properties
+        const filtered = allProperties.filter(p => {
+          const matchesLocation = p.address.toLowerCase().includes(searchLocation);
+          const matchesType = !filterType || p.type === filterType;
+          const price = parseFloat(p.price) || 0;
+          const matchesPrice = price >= minPrice && price <= maxPrice;
+          return matchesLocation && matchesType && matchesPrice;
+        });
+
+        // Geocode and add markers (for demo, randomize location around PH center)
+        filtered.forEach((p, i) => {
+          // TODO: Replace with real geocoding if available
+          const lat = 12.8797 + (Math.random() - 0.5) * 8; // Randomize for demo
+          const lng = 121.7740 + (Math.random() - 0.5) * 8;
+          const marker = L.marker([lat, lng]).addTo(map);
+          marker.on('click', () => showPropertyModal(p));
+          marker.bindPopup(`<b>${p.type}</b><br>${p.address}`);
+          markers.push(marker);
+        });
+      }
+
+      // Show property details in modal
+      function showPropertyModal(p) {
+        let html = `<h4>${p.type}</h4><p><b>Address:</b> ${p.address}</p>`;
+        html += `<p><b>Price:</b> ₱${Number(p.price).toLocaleString()}</p>`;
+        html += `<p><b>Lot Area:</b> ${p.lot_area || '-'} sqm<br><b>Floor Area:</b> ${p.floor_area || '-'} sqm</p>`;
+        html += `<p><b>Class:</b> ${p.class}<br><b>Sales Officer:</b> ${p.sales_officer}</p>`;
+        if (p.image) {
+          html += `<img src="/images/${p.image}" class="img-fluid rounded mb-2" alt="Property Image">`;
+        }
+        document.getElementById('propertyDetails').innerHTML = html;
+        var modal = new bootstrap.Modal(document.getElementById('propertyModal'));
+        modal.show();
+      }
+
+      // Filter events
+      document.getElementById('searchLocation').addEventListener('input', updateMarkers);
+      document.getElementById('filterType').addEventListener('change', updateMarkers);
+      document.getElementById('minPrice').addEventListener('input', updateMarkers);
+      document.getElementById('maxPrice').addEventListener('input', updateMarkers);
+    </script>
+</body>
+</html> 
