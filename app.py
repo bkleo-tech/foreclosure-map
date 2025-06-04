@@ -55,16 +55,16 @@ class Property(db.Model):
     def to_dict(self):
         return {
             'code': self.code,
-            'category': self.category,
+            'category': self.category if self.category is not None else "N/A",
             'class': self.class_type,
             'address': self.address,
-            'lot_area': self.lot_area,
-            'floor_area': self.floor_area,
-            'min_bid_price_(php)': self.min_bid_price_php,
-            'sales_officer': self.sales_officer,
+            'lot_area': self.lot_area if self.lot_area is not None else "N/A",
+            'floor_area': self.floor_area if self.floor_area is not None else "N/A",
+            'min_bid_price_(php)': self.min_bid_price_php if self.min_bid_price_php is not None else "N/A",
+            'sales_officer': self.sales_officer if self.sales_officer is not None else "N/A",
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'image': self.image
+            'image': self.image if self.image is not None else "N/A"
         }
 
 # --- Data Storage (In-Memory) --- #
@@ -119,17 +119,17 @@ def load_initial_data_to_db():
                 # Use .get() with default None to handle potential missing columns gracefully
                 property_obj = Property(
                     code=row.get('Code'),
-                    category=row.get('Category'),
+                    category=row.get('Category') if pd.notna(row.get('Category')) else None,
                     class_type=row.get('Class'),
                     address=row.get('Address'),
-                    lot_area=row.get('Lot Area (sqm)'),
-                    floor_area=row.get('Floor Area (sqm)'),
-                    min_bid_price_php=row.get('Min Bid Price (PHP)'),
-                    sales_officer=row.get('Sales Officer'),
+                    lot_area=row.get('Lot Area (sqm)') if pd.notna(row.get('Lot Area (sqm)')) else None,
+                    floor_area=row.get('Floor Area (sqm)') if pd.notna(row.get('Floor Area (sqm)')) else None,
+                    min_bid_price_php=row.get('Min Bid Price (PHP)') if pd.notna(row.get('Min Bid Price (PHP)')) else None,
+                    sales_officer=row.get('Sales Officer') if pd.notna(row.get('Sales Officer')) else None,
                     # Geocoding is now handled during upload, but can initially load existing lat/lng
                     latitude=row.get('Latitude') if pd.notna(row.get('Latitude')) else None,
                     longitude=row.get('Longitude') if pd.notna(row.get('Longitude')) else None,
-                    image=row.get('Image')
+                    image=row.get('Image') if pd.notna(row.get('Image')) else None
                 )
                 properties_to_add.append(property_obj)
 
