@@ -51,6 +51,22 @@ class Property(db.Model):
     def __repr__(self):
         return f"<Property {self.code}>"
 
+    # Helper method to convert model instance to dictionary
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'category': self.category,
+            'class': self.class_type,
+            'address': self.address,
+            'lot_area': self.lot_area,
+            'floor_area': self.floor_area,
+            'min_bid_price_(php)': self.min_bid_price_php,
+            'sales_officer': self.sales_officer,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'image': self.image
+        }
+
 # --- Data Storage (In-Memory) --- #
 # This will be replaced by database interaction
 # all_properties_data = [] # Remove or comment out later
@@ -153,26 +169,12 @@ def index():
 
 @app.route('/api/properties')
 def get_properties():
-    # Fetch data from the database instead of in-memory list
+    # Fetch data from the database
     properties_from_db = Property.query.all()
-    # Convert SQLAlchemy objects to dictionaries for JSON response
-    properties_for_json = []
-    for prop in properties_from_db:
-        # Manually create dictionary, converting None to null is handled by jsonify
-        properties_for_json.append({
-            'code': prop.code,
-            'category': prop.category,
-            'class': prop.class_type,
-            'address': prop.address,
-            'lot_area': prop.lot_area,
-            'floor_area': prop.floor_area,
-            'min_bid_price_(php)': prop.min_bid_price_php,
-            'sales_officer': prop.sales_officer,
-            'latitude': prop.latitude,
-            'longitude': prop.longitude,
-            'image': prop.image
-        })
+    # Convert SQLAlchemy objects to dictionaries for JSON response using to_dict method
+    properties_for_json = [prop.to_dict() for prop in properties_from_db]
 
+    # jsonify correctly converts Python None to JSON null
     return jsonify(properties_for_json)
 
 @app.route('/admin')
@@ -293,6 +295,9 @@ def upload_csv():
                                errors.append(f"Row {index + 1}: Invalid numeric data for {num_col} on code {code}: {val}")
                                print(errors[-1])
 
+                # --- Debug Print --- #
+                print(f"--- Row {index + 1} (Code: {code}) - Data to Save: {data_to_save}")
+                # ----------------- #
 
                 if property_obj:
                     # Update existing property
