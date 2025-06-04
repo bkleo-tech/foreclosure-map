@@ -6,8 +6,6 @@
     <title>Foreclosure Map</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
         #map {
             height: 600px;
@@ -42,8 +40,6 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Bootstrap JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
     <script>
         // Initialize map
@@ -102,70 +98,33 @@
                     const lat = parseFloat(p.latitude);
                     const lng = parseFloat(p.longitude);
                     const marker = L.marker([lat, lng]).addTo(map);
-                    marker.on('click', () => showPropertyModal(p));
+                    // Create popup content
+                    const imageTag = p.image && p.image !== 'N/A' ? `<img src="${p.image}" style="max-width: 100%; height: auto;">` : '';
+                    const priceText = p['min_bid_price_(php)'] !== undefined && p['min_bid_price_(php)'] !== null ? `₱${p['min_bid_price_(php)']}` : 'N/A';
+                    const lotAreaText = p.lot_area !== undefined && p.lot_area !== null ? `${p.lot_area} sqm` : 'N/A sqm';
+                    const floorAreaText = p.floor_area !== undefined && p.floor_area !== null ? `${p.floor_area} sqm` : 'N/A sqm';
+
+                    const popupContent = `
+                        <div style="max-width: 300px;">
+                            <h3>${p.code || 'N/A'}</h3>
+                            ${imageTag}
+                            <p><strong>Address:</strong> ${p.address || 'N/A'}</p>
+                            <p><strong>Price:</strong> ${priceText}</p>
+                            <p><strong>Lot Area:</strong> ${lotAreaText}</p>
+                            <p><strong>Floor Area:</strong> ${floorAreaText}</p>
+                            <p><strong>Class:</strong> ${p.class || 'N/A'}</p>
+                            <p><strong>Sales Officer:</strong> ${p.sales_officer || 'N/A'}</p>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
                     markers.push(marker);
                 } else {
                     console.log('Skipping marker for property (missing/invalid coordinates):', p.code, p.address, p.latitude, p.longitude);
-                    console.log('Property missing coordinates:', p);
                 }
             });
         }
-
-        function showPropertyModal(property) {
-            // Set modal content
-            const modalTitle = document.getElementById('propertyModalTitle');
-            const modalBody = document.getElementById('propertyModalBody');
-            const modalImageContainer = document.getElementById('modalImageContainer');
-
-            modalTitle.textContent = property.code || 'N/A'; // Use Code as title
-            
-            // Clear previous image content
-            modalImageContainer.innerHTML = '';
-            
-            if (property.image && property.image !== 'N/A') {
-                const img = document.createElement('img');
-                img.src = property.image;
-                img.alt = 'Property Image'; // Add alt text for accessibility
-                img.classList.add('modal-image');
-                modalImageContainer.appendChild(img);
-            } else {
-                // Optional: Add a placeholder if no image
-                const placeholder = document.createElement('div');
-                placeholder.textContent = 'No Image Available';
-                placeholder.classList.add('modal-image-placeholder');
-                modalImageContainer.appendChild(placeholder);
-            }
-
-            modalBody.innerHTML = `
-                <p><strong>Address:</strong> ${property.address || 'N/A'}</p>
-                <p><strong>Price:</strong> ₱${property['min_bid_price_(php)'] !== undefined && property['min_bid_price_(php)'] !== null ? property['min_bid_price_(php)'] : 'N/A'}</p>
-                <p><strong>Lot Area:</strong> ${property.lot_area || 'N/A'} sqm</p>
-                <p><strong>Floor Area:</strong> ${property.floor_area !== undefined && property.floor_area !== null ? property.floor_area : 'N/A'} sqm</p>
-                <p><strong>Class:</strong> ${property.class || 'N/A'}</p>
-                <p><strong>Sales Officer:</strong> ${property.sales_officer || 'N/A'}</p>
-            `;
-
-            // Show the modal
-            const propertyModal = new bootstrap.Modal(document.getElementById('propertyModal'));
-            propertyModal.show();
-        }
     </script>
-
-    <!-- Property Detail Modal -->
-    <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="propertyModalTitle">Property Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="propertyModalBody">
-                    <div id="modalImageContainer"></div>
-                    <!-- Property details will be loaded here by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
 
 </body>
 </html> 
