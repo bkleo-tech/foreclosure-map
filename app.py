@@ -9,6 +9,10 @@ from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy
 from dotenv import load_dotenv # Keep dotenv for local testing if you use a .env file
 load_dotenv()
 
+# --- Debugging .env loading ---
+print(f"SECRET_KEY loaded from .env: {os.environ.get('SECRET_KEY', 'NOT_LOADED')}")
+# -----------------------------
+
 # --- Configuration --- #
 SECRET_KEY = os.environ.get('SECRET_KEY', 'a_very_secret_key_that_should_be_changed') # Add a secret key for sessions
 # Database Configuration - Set this environment variable! (e.g., in .env or Railway variables)
@@ -31,6 +35,10 @@ CSV_PATH = os.path.join(app.root_path, 'Bank_Listings.csv')
 GOOGLE_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY') # Get API key from environment
 GEOCODE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
 
+# --- Debug Print --- #
+print(f"SQLALCHEMY_DATABASE_URI being used: {app.config['SQLALCHEMY_DATABASE_URI']}")
+# ----------------- #
+
 # --- Database Model --- #
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -50,6 +58,22 @@ class Property(db.Model):
 
     def __repr__(self):
         return f"<Property {self.code}>"
+
+    # Helper method to convert model instance to dictionary
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'category': self.category if self.category is not None else "N/A",
+            'class': self.class_type,
+            'address': self.address,
+            'lot_area': self.lot_area if self.lot_area is not None else "N/A",
+            'floor_area': self.floor_area if self.floor_area is not None else "N/A",
+            'min_bid_price_(php)': self.min_bid_price_php if self.min_bid_price_php is not None else "N/A",
+            'sales_officer': self.sales_officer if self.sales_officer is not None else "N/A",
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'image': self.image if self.image is not None else "N/A"
+        }
 
 # --- Data Storage (In-Memory) --- #
 # This will be replaced by database interaction
@@ -153,26 +177,12 @@ def index():
 
 @app.route('/api/properties')
 def get_properties():
-    # Fetch data from the database instead of in-memory list
+    # Fetch data from the database
     properties_from_db = Property.query.all()
-    # Convert SQLAlchemy objects to dictionaries for JSON response
-    properties_for_json = []
-    for prop in properties_from_db:
-        # Manually create dictionary, converting None to null is handled by jsonify
-        properties_for_json.append({
-            'code': prop.code,
-            'category': prop.category,
-            'class': prop.class_type,
-            'address': prop.address,
-            'lot_area': prop.lot_area,
-            'floor_area': prop.floor_area,
-            'min_bid_price_(php)': prop.min_bid_price_php,
-            'sales_officer': prop.sales_officer,
-            'latitude': prop.latitude,
-            'longitude': prop.longitude,
-            'image': prop.image
-        })
+    # Convert SQLAlchemy objects to dictionaries for JSON response using to_dict method
+    properties_for_json = [prop.to_dict() for prop in properties_from_db]
 
+    # jsonify correctly converts Python None to JSON null
     return jsonify(properties_for_json)
 
 @app.route('/admin')
@@ -293,6 +303,9 @@ def upload_csv():
                                errors.append(f"Row {index + 1}: Invalid numeric data for {num_col} on code {code}: {val}")
                                print(errors[-1])
 
+                # --- Debug Print --- #
+                print(f"--- Row {index + 1} (Code: {code}) - Data to Save: {data_to_save}")
+                # ----------------- #
 
                 if property_obj:
                     # Update existing property
