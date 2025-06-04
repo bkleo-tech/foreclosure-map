@@ -107,27 +107,42 @@
         }
 
         function showPropertyModal(property) {
-            // Create a more detailed popup
-            const placeholderImage = '/static/images/placeholder.png'; // Path to your placeholder image
-            const propertyImage = property.image ? ` src="${property.image}"` : ` src="${placeholderImage}"`;
-            const imageTag = `<img${propertyImage} style="max-width: 100%; height: auto;">`;
+            // Set modal content
+            const modalTitle = document.getElementById('propertyModalTitle');
+            const modalBody = document.getElementById('propertyModalBody');
+            const modalImageContainer = document.getElementById('modalImageContainer');
 
-            const popupContent = `
-                <div style="max-width: 300px;">
-                    <h3>${property.type || 'N/A'}</h3>
-                    ${imageTag}
-                    <p><strong>Address:</strong> ${property.address || 'N/A'}</p>
-                    <p><strong>Price:</strong> ₱${property.price ? parseFloat(property.price).toLocaleString() : 'N/A'}</p>
-                    <p><strong>Lot Area:</strong> ${property.lot_area || 'N/A'} sqm</p>
-                    <p><strong>Floor Area:</strong> ${property.floor_area || 'N/A'} sqm</p>
-                    <p><strong>Class:</strong> ${property.class || 'N/A'}</p>
-                    <p><strong>Sales Officer:</strong> ${property.sales_officer || 'N/A'}</p>
-                </div>
+            modalTitle.textContent = property.code || 'N/A'; // Use Code as title
+            
+            // Clear previous image content
+            modalImageContainer.innerHTML = '';
+            
+            if (property.image && property.image !== 'N/A') {
+                const img = document.createElement('img');
+                img.src = property.image;
+                img.alt = 'Property Image'; // Add alt text for accessibility
+                img.classList.add('modal-image');
+                modalImageContainer.appendChild(img);
+            } else {
+                // Optional: Add a placeholder if no image
+                const placeholder = document.createElement('div');
+                placeholder.textContent = 'No Image Available';
+                placeholder.classList.add('modal-image-placeholder');
+                modalImageContainer.appendChild(placeholder);
+            }
+
+            modalBody.innerHTML = `
+                <p><strong>Address:</strong> ${property.address || 'N/A'}</p>
+                <p><strong>Price:</strong> ₱${property['min_bid_price_(php)'] !== undefined && property['min_bid_price_(php)'] !== null ? property['min_bid_price_(php)'] : 'N/A'}</p>
+                <p><strong>Lot Area:</strong> ${property.lot_area || 'N/A'} sqm</p>
+                <p><strong>Floor Area:</strong> ${property.floor_area !== undefined && property.floor_area !== null ? property.floor_area : 'N/A'} sqm</p>
+                <p><strong>Class:</strong> ${property.class || 'N/A'}</p>
+                <p><strong>Sales Officer:</strong> ${property.sales_officer || 'N/A'}</p>
             `;
-            L.popup()
-                .setLatLng([property.latitude, property.longitude])
-                .setContent(popupContent)
-                .openOn(map);
+
+            // Show the modal
+            const propertyModal = new bootstrap.Modal(document.getElementById('propertyModal'));
+            propertyModal.show();
         }
     </script>
 </body>
