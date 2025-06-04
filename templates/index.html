@@ -54,12 +54,12 @@
         fetch('/api/properties')
             .then(response => response.json())
             .then(properties => {
-                console.log('Received properties:', properties);
+                console.log('Frontend received updated properties after upload:', properties);
                 allProperties = properties;
                 updateMarkers();
             })
             .catch(error => {
-                console.error('Error fetching properties:', error);
+                console.error('Error fetching properties after upload:', error);
             });
 
         function updateMarkers() {
@@ -76,10 +76,15 @@
 
             // Filter properties
             const filtered = allProperties.filter(p => {
-                const matchesLocation = p.address.toLowerCase().includes(searchLocation);
-                const matchesType = !filterType || p.type === filterType;
+                // Add checks for existence before accessing properties
+                const address = p.address || ''; // Use empty string if address is null/undefined
+                const type = p.type;
                 const price = parseFloat(p.price) || 0;
+
+                const matchesLocation = address.toLowerCase().includes(searchLocation);
+                const matchesType = !filterType || (type !== null && type !== undefined && type === filterType);
                 const matchesPrice = price >= minPrice && price <= maxPrice;
+
                 return matchesLocation && matchesType && matchesPrice;
             });
 
@@ -88,13 +93,14 @@
             // Add markers using real coordinates
             filtered.forEach((p, i) => {
                 if (p.latitude && p.longitude) {
-                    console.log('Adding marker for property:', p);
+                    console.log('Attempting to add marker for property:', p.code, p.address);
                     const lat = parseFloat(p.latitude);
                     const lng = parseFloat(p.longitude);
                     const marker = L.marker([lat, lng]).addTo(map);
                     marker.on('click', () => showPropertyModal(p));
                     markers.push(marker);
                 } else {
+                    console.log('Skipping marker for property (missing/invalid coordinates):', p.code, p.address, p.latitude, p.longitude);
                     console.log('Property missing coordinates:', p);
                 }
             });
