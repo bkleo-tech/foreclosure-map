@@ -2,70 +2,77 @@
 
 ## Project Description
 
-This project is a web application built with Flask that allows users to visualize foreclosure property listings on an interactive map. The property data, including location details, price, and other relevant information, is loaded from a CSV file and stored in a PostgreSQL database for persistence and efficient retrieval. The application provides a public interface displaying the map with markers for each property. Users can view detailed information about a property by clicking on its marker, which opens a popup. Additionally, there is a protected admin interface that allows authorized users to upload new CSV files to update the property listings in the database. The application is designed to be deployable on platforms like Railway, utilizing environment variables for configuration management.
+This project is a web application built with Flask that allows users to visualize foreclosure property listings on an interactive map. Property data is loaded from a CSV file and stored in a PostgreSQL database, providing a persistent and searchable source of information. The application features a public interface with a map displaying markers for each geocoded property. Clicking a marker reveals a popup with detailed information about that listing. A separate, protected admin interface facilitates securely uploading new CSV files to update the database, adding new properties, updating existing ones, and removing listings not present in the new file.
 
-The primary goal of this application is to provide a simple yet effective way to display and manage a dataset of geocoded properties, making it easy for potential buyers or interested parties to browse listings visually on a map.
+**Live Demo:** You can access the live deployed application here: [https://foreclosure-map-production.up.railway.app/](https://foreclosure-map-production.up.railway.app/)
 
-## File Breakdown
+## Application Logic and Data Flow
 
-Here's a description of the main files in this project:
+The application follows a clear data flow:
 
-*   **`app.py`**: This is the core Python Flask application file. It contains the server-side logic for the web application. Key components include:
-    *   Flask application setup and configuration, including setting up the secret key and database URI using environment variables.
-    *   Integration with `python-dotenv` for loading environment variables from a `.env` file during local development.
-    *   Database setup and interaction using SQLAlchemy, defining the `Property` model to represent the structure of the property data stored in the PostgreSQL database.
-    *   Routes for handling incoming HTTP requests:
-        *   `/`: Renders the main `index.html` template, which displays the map.
-        *   `/api/properties`: An API endpoint that fetches property data from the database, converts it into a JSON format suitable for the frontend, and returns it.
-        *   `/admin`: A protected route (requiring login) that renders the `admin.html` template for uploading CSV files.
-        *   `/login`: Handles the login logic for the admin interface.
-        *   `/logout`: Handles the logout logic.
-        *   `/upload`: Handles POST requests for uploading new CSV files. This function reads the uploaded CSV, processes the data (including ensuring data types and handling potential missing values), performs geocoding if necessary (though this part of the logic might be simplified now, it was a consideration), updates existing properties or inserts new ones based on a unique code, and deletes properties from the database that are no longer present in the uploaded CSV. It includes robust error handling for file processing and database operations.
-    *   Includes a geocoding function (`geocode_address_google`) that interacts with the Google Maps Geocoding API to get latitude and longitude for addresses, with basic rate limiting.
-    *   Includes a function (`load_initial_data_to_db`) to load data from a local `Bank_Listings.csv` file into the database when the application starts, but only if the database table is empty. This is useful for initial setup.
-    *   Contains the `to_dict` method in the `Property` model to easily convert database objects to dictionaries for JSON serialization, with handling for `None` values.
+1.  **Data Source:** Property listings are initially provided in a CSV file (`Bank_Listings.csv`).
+2.  **Initial Load/Upload:**
+    *   When the application starts and the database is empty, the `load_initial_data_to_db` function reads the `Bank_Listings.csv` file and populates the database.
+    *   Administrators can upload a new CSV file via the `/upload` endpoint. The `upload_csv` function reads this file.
+3.  **Data Processing (during Upload/Initial Load):** The loaded CSV data is processed row by row. Key steps include:
+    *   Extracting data fields like Code, Category, Address, Price, Area, etc.
+    *   Handling potential missing or `NaN` values by converting them to `None`.
+    *   Performing geocoding for properties that are missing Latitude and Longitude coordinates using the Google Maps Geocoding API.
+    *   Preparing the data to match the `Property` model structure.
+4.  **Database Interaction:** Processed data is used to interact with the PostgreSQL database via SQLAlchemy:
+    *   Existing properties (matched by 'Code') are updated.
+    *   New properties are inserted.
+    *   Properties in the database that are *not* in the uploaded CSV are deleted, ensuring the database reflects the latest uploaded data.
+5.  **Frontend Data Fetching:** The public map interface (`index.html`) makes an asynchronous request to the `/api/properties` endpoint.
+6.  **Backend Data Retrieval:** The `/api/properties` route queries the database using SQLAlchemy to fetch all stored property listings.
+7.  **Data Serialization:** The fetched database objects are converted into a list of dictionaries using the `to_dict` method, which formats the data (e.g., handles `None` values, formats price). This list is then returned as a JSON response.
+8.  **Frontend Map Display:** The JavaScript code in `index.html` receives the JSON data. For each property with valid latitude and longitude, it creates a marker on the Leaflet map and binds a popup containing the property's details.
 
-*   **`templates/index.html`**: This is the HTML template for the main map view. It includes:
-    *   The basic HTML5 structure.
-    *   Links to external libraries like Leaflet (for the interactive map) and Bootstrap (for basic styling and potentially the modal, although the modal was later replaced by Leaflet popups).
-    *   CSS for styling the map and filter elements.
-    *   JavaScript code that initializes the Leaflet map, fetches property data from the `/api/properties` endpoint, adds markers to the map for each property with valid coordinates, and binds a popup to each marker. The popup displays detailed property information fetched from the backend, including the property code, address, price, area details, sales officer, and an image if available.
-    *   Includes input fields and a button for potential filtering functionality based on location, property type, and price range, although the filtering logic is implemented in the `updateMarkers` JavaScript function on the frontend.
+## Endpoints
 
-*   **`templates/admin.html`**: This HTML template provides the interface for the admin user to upload a CSV file. It contains a simple form with a file input field and a submit button that sends the CSV to the `/upload` endpoint.
+The application exposes the following endpoints:
 
-*   **`templates/login.html`**: This HTML template provides a basic login form for accessing the `/admin` route. It takes a username and password as input.
+*   **`/` (GET):** Renders the main map page (`index.html`). This is the public entry point of the application.
+*   **`/api/properties` (GET):** Returns a JSON array of all property listings stored in the database. This endpoint is consumed by the frontend JavaScript to populate the map.
+*   **`/admin` (GET):** Renders the admin file upload page (`admin.html`). This route is protected and requires authentication.
+*   **`/login` (GET, POST):** Renders the login form (GET) and handles the submission of login credentials (POST). Successful login sets a session variable for authentication.
+*   **`/logout` (GET):** Clears the session and redirects the user to the home page, effectively logging them out.
+*   **`/upload` (POST):** Accepts a CSV file upload from the admin interface. Processes the file, updates the database with the new data (inserting, updating, and deleting as necessary), and returns a JSON response indicating the status and any errors.
 
-*   **`requirements.txt`**: This file lists the Python packages required by the project (e.g., Flask, pandas, Flask-SQLAlchemy, psycopg2, python-dotenv, requests). It is used by pip to install the project's dependencies, crucial for setting up virtual environments and for deployment platforms.
+## User Flow
 
-*   **`.gitignore`**: This file specifies intentionally untracked files and directories that Git should ignore. It includes entries for the Python virtual environment (`venv/`), cache directories (`__pycache__/`), local environment file (`.env`), and potentially generated files like geocode caches (`geocode_cache.csv`, `geocode_cache_google.csv`). This prevents sensitive information and build artifacts from being committed to the Git repository.
+**Public User Flow:**
 
-*   **`Procfile`**: This file is used by platforms like Railway to specify the command needed to start the application's web server. It typically tells the platform to run a WSGI server (like Gunicorn) with your Flask application.
+1.  A user navigates to the application's root URL (`/`).
+2.  The server renders the `index.html` page containing the map.
+3.  The frontend JavaScript automatically fetches property data from `/api/properties`.
+4.  Properties with coordinates are displayed as markers on the map.
+5.  The user can interact with the map (pan, zoom).
+6.  Clicking on a marker opens a popup displaying detailed information about the property.
+7.  (Optional) Users can use the filter inputs (location, type, price) to narrow down the properties displayed on the map.
 
-*   **`.env`**: This file (not committed to Git due to `.gitignore`) is used for storing environment-specific variables locally, such as `DATABASE_URL`, `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `GOOGLE_MAPS_API_KEY`. `python-dotenv` reads this file and loads these variables into the environment when the application starts locally.
+**Administrator User Flow:**
 
-*   **`Bank_Listings.csv`**: The default CSV file containing the initial property data. While the application primarily uses the database after the initial load or subsequent uploads, this file serves as the initial data source.
+1.  An administrator navigates to the `/admin` route.
+2.  If not logged in, they are redirected to the `/login` page.
+3.  On the `/login` page, the administrator enters their username and password and submits the form.
+4.  If credentials are correct, the session is set, and the administrator is redirected to the `/admin` page.
+5.  On the `/admin` page, the administrator uses the file upload form to select and submit a new CSV file containing updated property listings.
+6.  The `/upload` endpoint processes the CSV, updates the database, and returns a result.
+7.  The administrator can log out by navigating to the `/logout` route.
 
-## Design Choices and Debates
+## Key Technologies and Design Choices
 
-Several design choices were made during the development of this application:
+*   **Flask:** Chosen as the web framework for its lightweight nature and flexibility. It provides the essential tools for routing HTTP requests, managing templates, and handling web application logic without imposing rigid structures, which was suitable for the project's scope.
 
-*   **Flask vs. Django/Other Frameworks:** Flask was chosen for its simplicity and lightweight nature. For a relatively small application focused on a specific task like displaying data on a map with a simple admin interface, Flask provides enough functionality without the overhead of a full-featured framework like Django. The debate here often revolves around whether the project's potential future complexity warrants starting with a more opinionated and feature-rich framework. For this project's scope, Flask was deemed appropriate.
+*   **PostgreSQL & SQLAlchemy:** PostgreSQL was selected for its robust and reliable nature as a relational database, well-suited for structured data like property listings. SQLAlchemy was chosen as the ORM to provide an expressive Python interface for database operations. Using an ORM simplifies interactions compared to writing raw SQL, enhances code readability, and reduces the risk of SQL injection.
 
-*   **SQLAlchemy for Database Interaction:** SQLAlchemy was chosen as the Object-Relational Mapper (ORM) to interact with the PostgreSQL database. An ORM simplifies database operations by allowing developers to work with Python objects rather than writing raw SQL queries. This makes the code cleaner, more maintainable, and less prone to SQL injection vulnerabilities compared to manual SQL string formatting. The alternative would be to use a lower-level database adapter like `psycopg2` directly, which would require writing SQL for every database operation.
+*   **Leaflet:** Selected as the JavaScript library for creating interactive maps. Leaflet is lightweight, mobile-friendly, and easy to use, providing all the necessary features for displaying map tiles, adding markers, and handling marker click events for popups.
 
-*   **PostgreSQL Database:** PostgreSQL was selected as the database system due to its robustness, reliability, and suitability for handling structured data like property listings. Railway's easy integration with PostgreSQL was also a factor. Other choices could include SQLite (simpler, file-based, good for small projects but less robust for concurrent access) or MySQL.
+*   **pandas:** Used for reading and processing data from CSV files in the Flask backend. pandas provides powerful and efficient data manipulation capabilities, making it straightforward to read CSV data into DataFrames, handle missing values (`NaN`), and iterate through rows.
 
-*   **Frontend Approach (Leaflet + Vanilla JS/Bootstrap):** The frontend uses Leaflet for the map functionality and a combination of vanilla JavaScript and Bootstrap for the UI elements and modal/popup display. A full frontend framework like React, Vue, or Angular was not used to keep the project simpler and avoid the complexity of a separate frontend build process and state management for this relatively straightforward interface. This choice is a trade-off between development speed for simple UIs and scalability/maintainability for more complex interactive frontends.
+*   **Google Maps Geocoding API:** Integrated to convert property addresses into geographical coordinates (Latitude and Longitude). This was necessary as the initial CSV might not contain coordinates for all listings. The API is called during the CSV upload process for properties missing coordinates. The API key is securely managed using environment variables.
 
-*   **Data Persistence (Database vs. File):** Initially, data might have been loaded directly from the CSV for each request or stored in memory. However, moving to a database (PostgreSQL with SQLAlchemy) was a crucial design decision for persistence (data survives server restarts), concurrent access (multiple users/processes can access the data reliably), and enabling more complex querying and filtering on the backend if needed in the future. Storing data only in memory or directly from a CSV on each request would not be scalable or persistent.
+*   **python-dotenv:** Used to load environment variables from a `.env` file during local development. This allows sensitive information like the database URL, secret key, and API keys to be stored outside the codebase, which is crucial for security and managing configuration across different environments (local vs. deployment).
 
-*   **CSV Upload for Updates:** The admin interface allows updating listings by uploading a new CSV. The logic is implemented to effectively replace the existing dataset with the new one (deleting properties not in the new CSV and updating/inserting others). This is a simple and convenient update mechanism for this type of application. An alternative could be providing individual CRUD (Create, Read, Update, Delete) interfaces for properties, which would offer more fine-grained control but add significant complexity to the admin UI and backend logic.
-
-*   **Geocoding Strategy:** Using the Google Maps Geocoding API provides accurate geocoding. The decision to initially geocode during the CSV upload process and store coordinates in the database avoids needing to geocode on every map load. Handling API keys securely via environment variables was essential. The exploration of caching geocoded results locally (using cache files that were later added to `.gitignore`) was a consideration to reduce API calls and speed up processing, demonstrating an iterative design process.
-
-*   **Authentication:** A simple username/password login with Flask sessions was implemented for the admin area. This is suitable for a basic administrative interface. For applications requiring more robust security or user roles, more complex authentication systems (like OAuth, Flask-Login with database-backed users, etc.) would be necessary. The debate here is about balancing required security levels with development effort.
-
-*   **Environment Variable Management:** Utilizing `python-dotenv` locally and relying on the deployment platform's (Railway) environment variable injection is a standard and secure practice for managing configuration and secrets outside of the codebase. Hardcoding sensitive information directly in the code would be insecure and make deployment across different environments difficult.
-
-These design choices reflect a focus on building a functional application with a clear purpose, prioritizing simplicity and using appropriate tools for the task while being mindful of security and deployability.
+*   **Environment Variables:** A fundamental design choice for managing configuration and secrets. Using environment variables ensures that sensitive data is not hardcoded into the application and allows for easy configuration changes between development and production environments like Railway.
